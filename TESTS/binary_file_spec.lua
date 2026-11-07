@@ -59,5 +59,30 @@ return function(H)
     ":DiffOrig shows the bytes"
   )
   reset()
+
+  -- The directory summary reads its files the same way: a NUL is no line break there either.
+  local src, tgt = dir .. "/src", dir .. "/tgt"
+  vim.fn.mkdir(src, "p")
+  vim.fn.mkdir(tgt, "p")
+  vim.fn.writefile(vim.fn.eval("0z7000710A"), src .. "/nul.bin") -- "p\0q\n": one line
+  vim.fn.writefile({ "p", "q" }, tgt .. "/nul.bin") -- "p\nq\n": two lines
+  vim.fn.writefile(vim.fn.eval("0z6100620A"), src .. "/two.bin") -- "a\0b\n"
+  vim.fn.writefile(vim.fn.eval("0z7800790A"), tgt .. "/two.bin") -- "x\0y\n": still one line, changed
+  local cfg = {
+    algorithm = "histogram",
+    ctxlen = 3,
+    directory_max_files = 2000,
+    stat_list = "off",
+    stat_list_mode = "add",
+  }
+  vim.cmd("silent! only")
+  require("diff.core.directory").run(src, tgt, "src", "tgt", "buffer", cfg)
+  local summary = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
+  ok(summary:match("M%s+%+2%s+%-1%s+nul%.bin") ~= nil, "a NUL and a newline differ: " .. summary)
+  ok(
+    summary:match("M%s+%+1%s+%-1%s+two%.bin") ~= nil,
+    "one line with NULs is one line: " .. summary
+  )
+  reset()
   vim.fn.delete(dir, "rf")
 end

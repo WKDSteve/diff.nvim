@@ -15,6 +15,8 @@ local expand_path = require("lib.nvim.cross.fs.expand_path")
 
 local notify = require("diff.util.notify")
 local render = require("diff.core.render")
+-- read_file: a NUL byte stays one byte of its line, as in every other source (resolve.lua).
+local resolve = require("diff.core.resolve")
 local scratch = require("diff.core.scratch")
 local list = require("lib.nvim.ui.list")
 
@@ -136,11 +138,11 @@ local function diff_trees(source_dir, target_dir, algorithm, ctxlen, max_files)
   for _, rel in ipairs(union_sorted(src_files, tgt_files)) do
     local in_src, in_tgt = src_set[rel] == true, tgt_set[rel] == true
     if in_src and in_tgt then
-      local a_ok, a_lines = pcall(fn.readfile, source_dir .. "/" .. rel)
+      local a_ok, a_lines = pcall(resolve.read_file, source_dir .. "/" .. rel)
       if not a_ok then
         return nil, string.format("could not read %s/%s: %s", source_dir, rel, a_lines)
       end
-      local b_ok, b_lines = pcall(fn.readfile, target_dir .. "/" .. rel)
+      local b_ok, b_lines = pcall(resolve.read_file, target_dir .. "/" .. rel)
       if not b_ok then
         return nil, string.format("could not read %s/%s: %s", target_dir, rel, b_lines)
       end
@@ -157,13 +159,13 @@ local function diff_trees(source_dir, target_dir, algorithm, ctxlen, max_files)
           { rel = rel, status = "M", added = stats.added, removed = stats.removed }
       end
     elseif in_tgt then
-      local ok, lines = pcall(fn.readfile, target_dir .. "/" .. rel)
+      local ok, lines = pcall(resolve.read_file, target_dir .. "/" .. rel)
       if not ok then
         return nil, string.format("could not read %s/%s: %s", target_dir, rel, lines)
       end
       entries[#entries + 1] = { rel = rel, status = "A", added = #lines, removed = 0 }
     else
-      local ok, lines = pcall(fn.readfile, source_dir .. "/" .. rel)
+      local ok, lines = pcall(resolve.read_file, source_dir .. "/" .. rel)
       if not ok then
         return nil, string.format("could not read %s/%s: %s", source_dir, rel, lines)
       end

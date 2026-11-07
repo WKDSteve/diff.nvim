@@ -14,7 +14,13 @@
 local this = vim.fn.fnamemodify(debug.getinfo(1, "S").source:sub(2), ":p")
 local root = vim.fs.dirname(vim.fs.dirname(vim.fs.normalize(this)))
 
-local DEPS = { "testing.nvim", "lib.nvim" }
+local DEPS = { "testing.nvim", "lib.nvim", "ui.nvim" }
+
+-- Found like the others (`ci commit` hands it over as $UI_NVIM_DIR because it is named above), but left off the
+-- runtimepath: with ui.nvim there the toasts of diff.nvim no longer reach the vim.notify doubles of the specs. The test
+-- sheets press the real dialogs and add it themselves (TESTS/sheets/_helpers.lua, vim.g.diff_sheets_ui_nvim).
+---@type table<string, true>
+local SHEETS_ONLY = { ["ui.nvim"] = true }
 
 ---@type table<string, string>
 local MARKERS = { ["lib.nvim"] = "lua/lib/nvim", ["testing.nvim"] = "lua/testing" }
@@ -80,8 +86,11 @@ end
 
 vim.opt.rtp:prepend(root)
 for _, name in ipairs(DEPS) do
-  vim.opt.rtp:append(found[name])
+  if not SHEETS_ONLY[name] then
+    vim.opt.rtp:append(found[name])
+  end
 end
+vim.g.diff_sheets_ui_nvim = found["ui.nvim"]
 
 -- No clipboard provider here: testing.nvim installs an in-memory `+`/`*` (`testing.child.clipboard`)
 -- before this file runs, so resolve_spec's target=clipboard works on a bare CI runner and never

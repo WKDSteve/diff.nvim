@@ -58,6 +58,14 @@ jobs:
           path: lib.nvim
           ref: ci-verified
 
+      # ui.nvim: the pickers and prompts of :Diff (`ui.kit`) are what the test sheets press, for real.
+      - name: Checkout ui.nvim
+        uses: actions/checkout@v5
+        with:
+          repository: WKDSteve/ui.nvim
+          path: ui.nvim
+          ref: ci-verified
+
       - name: Install Neovim
         uses: rhysd/action-setup-vim@v1
         with:

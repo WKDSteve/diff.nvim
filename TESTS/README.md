@@ -26,6 +26,10 @@ process. The in-memory clipboard comes from testing.nvim (installed before the
 minit), so `"+"` behaves like a real register on a bare runner with no
 xclip/xsel/wl-clipboard/pbcopy and never touches your clipboard.
 
+`TESTS/sheets/*.sheet.lua` are the live checks of the manual checklist, run by `sheets_spec.lua` in a child editor
+(testing.nvim, `docs/SHEETS.md`): real commands in throwaway git repositories, the real curl against a server in the
+child. Only they use ui.nvim (`ui.kit`); `minimal_init.lua` finds it and `_helpers.lua` adds it there.
+
 ## Layout
 
 | File               | Covers                                                          |

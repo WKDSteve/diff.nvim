@@ -48,6 +48,26 @@ function M.parse_args(raw, known)
   return out, unknown
 end
 
+---A file's lines, in the shape a buffer's lines have.
+---
+---`readfile()` hands a NUL byte back as "\n" inside the line, and
+---`nvim_buf_set_lines` refuses such a line with a Lua error, so a binary file
+---(a PNG with `diff.image_compare = false`) failed `:Diff` with a stack trace
+---instead of showing its bytes. `nvim_buf_get_lines` writes the same byte as
+---"\0", and `vim.diff` joins lines with "\n", where the other spelling would
+---also cut one line in two.
+---@param path string
+---@return string[]
+function M.read_file(path)
+  local lines = fn.readfile(path)
+  for i, line in ipairs(lines) do
+    if line:find("\n", 1, true) then
+      lines[i] = (line:gsub("\n", "\0"))
+    end
+  end
+  return lines
+end
+
 ---Split raw text into diff lines, the way every other source in diff.nvim
 ---already produces them.
 ---
@@ -151,7 +171,7 @@ function M.resolve_lines(spec, label)
   if fn.filereadable(path) ~= 1 then
     return nil, string.format("%s: file not readable: %s", label, path)
   end
-  return fn.readfile(path), nil
+  return M.read_file(path), nil
 end
 
 return M

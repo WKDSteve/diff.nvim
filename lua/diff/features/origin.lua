@@ -43,7 +43,7 @@ function M.run()
     return
   end
 
-  local disk_lines = fn.readfile(path)
+  local disk_lines = require("diff.core.resolve").read_file(path)
 
   -- Snapshot of the saved version as a tracked, read-only scratch buffer.
   local snap =

@@ -52,4 +52,28 @@ return {
   surface = { track = true },
   -- gated: a failed conformance check makes `scripts/test.sh conformance` exit 1 (docs/CONFORMANCE.md of testing.nvim)
   conformance = { gate = true },
+  -- The pipeline is derived (`scripts/test.sh ci list`). The GitHub workflow is generated from `workflow`:
+  -- `testing init --workflow=public --force` writes it (testing.nvim docs/WORKFLOW-CI.md), the step
+  -- workflow-in-sync checks it.
+  ci = {
+    workflow = {
+      name = "diff.nvim",
+      layout = "hosted",
+      -- the steps that depend on the platform: the windows and macOS legs run only these
+      platform = { "suite", "conformance" },
+      -- more checkouts below .deps/, not on the runtimepath of the specs
+      checkouts = {
+        {
+          repo = "WKDSteve/ui.nvim",
+          ref = "ci-verified",
+          why = "The pickers and prompts of :Diff are what the test sheets press, for real.",
+        },
+      },
+      -- moves `ci-verified`: other repositories check diff.nvim out from it
+      publish = true,
+    },
+    steps = {
+      ["workflow-in-sync"] = { preset = "workflow-in-sync" },
+    },
+  },
 }

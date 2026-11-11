@@ -9,8 +9,6 @@
 --- after the diff it came from. Every diffmode write in diff.nvim goes through
 --- here so the rule is stated once instead of once per call site.
 
-local api = vim.api
-
 local M = {}
 
 ---Turn diffmode on or off for `win`, window-locally.
@@ -20,7 +18,7 @@ local M = {}
 ---@param on boolean
 ---@return nil
 function M.set(win, on)
-  pcall(api.nvim_set_option_value, "diff", on, { win = win, scope = "local" })
+  require("lib.nvim.diffmode").set(win, on)
 end
 
 return M

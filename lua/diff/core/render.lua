@@ -408,46 +408,19 @@ function M.three_way(origin_win, base_buf, target_buf, view)
     return nil
   end
 
-  local split_cmd = (view == "split") and "split" or "vsplit"
-
-  if view == "tab" then
-    local origin_buf = api.nvim_win_get_buf(origin_win)
-    vim.cmd("tabnew")
-    vim.cmd(string.format("silent! buffer %d", origin_buf))
-    local left = api.nvim_get_current_win()
-    vim.cmd(string.format("silent! vsplit | buffer %d", base_buf))
-    local mid = api.nvim_get_current_win()
-    vim.cmd(string.format("silent! vsplit | buffer %d", target_buf))
-    local right = api.nvim_get_current_win()
-    for _, w in ipairs({ left, mid, right }) do
-      if validate.win_valid(w) then
-        diffmode.set(w, true)
-      end
-    end
-    -- All three are ours here: `tabnew` created the one `left` lives in.
-    return { left, mid, right }
+  -- The layout itself is `lib.nvim.diffmode` (generalized from this function): the origin window keeps its live
+  -- buffer on the left and stays out of the result; in a tab all three windows are ours.
+  local origin_buf = api.nvim_win_get_buf(origin_win)
+  local res, err = require("lib.nvim.diffmode").open_n_way(
+    { origin_buf, base_buf, target_buf },
+    view,
+    { origin_win = view ~= "tab" and origin_win or nil }
+  )
+  if not res then
+    notify.error(err or "could not open the three-way diff")
+    return nil
   end
-
-  api.nvim_set_current_win(origin_win)
-  vim.cmd(string.format("silent! %s | buffer %d", split_cmd, base_buf))
-  local mid_win = api.nvim_get_current_win()
-
-  vim.cmd(string.format("silent! %s | buffer %d", split_cmd, target_buf))
-  local right_win = api.nvim_get_current_win()
-
-  for _, w in ipairs({ origin_win, mid_win, right_win }) do
-    if validate.win_valid(w) then
-      diffmode.set(w, true)
-    end
-  end
-
-  if validate.win_valid(origin_win) then
-    api.nvim_set_current_win(origin_win)
-  end
-
-  -- origin_win is the user's own window and stays out of the result, even
-  -- though it is part of the diff -- see DiffNvim.Result.
-  return { mid_win, right_win }
+  return res.opened
 end
 
 ---@internal

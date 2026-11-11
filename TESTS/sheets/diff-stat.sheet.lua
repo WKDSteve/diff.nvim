@@ -1,6 +1,7 @@
 -- Live check: output=stat and its lists, section 2 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.stat",
+  feature = "diff.stat",
   title = "diff.nvim: output=stat says +N -M, K hunks without a window; stat_list adds to or replaces a list",
   task = "diff.nvim/manual-checklist-run",
   steps = {

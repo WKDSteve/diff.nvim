@@ -1,6 +1,7 @@
 -- Live check: bare :Diff, section 1 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.bare",
+  feature = "diff.compare",
   title = "diff.nvim: bare :Diff asks with ui.kit, a file or a buffer number opens the diff, a range is the source",
   task = "diff.nvim/manual-checklist-run",
   steps = {

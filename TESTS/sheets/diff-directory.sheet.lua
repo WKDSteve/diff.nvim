@@ -1,6 +1,7 @@
 -- Live check: directory diff, section 7 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.directory",
+  feature = "diff.directory",
   title = "diff.nvim: two directories give a per-file summary without hidden segments; view= is ignored, stat rolls up",
   task = "diff.nvim/manual-checklist-run",
   steps = {

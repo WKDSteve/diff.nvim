@@ -1,6 +1,7 @@
 -- Live check: :DiffBuffers and :DiffClear, section 11 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.buffers",
+  feature = "diff.buffers",
   title = "diff.nvim: :DiffBuffers lists the other listed buffers, :DiffClear closes its own windows and no others",
   task = "diff.nvim/manual-checklist-run",
   steps = {

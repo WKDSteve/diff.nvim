@@ -1,6 +1,7 @@
 -- Live check: :DiffProfile and diff.diffopt_profile, section 15 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.profile",
+  feature = "diff.profile",
   title = "diff.nvim: :DiffProfile replaces 'diffopt' with one of four bundles, a live diff follows, a bad name changes nothing",
   task = "diff.nvim/manual-checklist-run",
   steps = {

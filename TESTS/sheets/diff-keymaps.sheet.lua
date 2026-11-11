@@ -1,6 +1,7 @@
 -- Live check: no keys by default, opts.keymaps shortcuts, section 13 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.keymaps",
+  feature = "diff.keymaps",
   title = "diff.nvim: only gh is bound by default; a shortcut runs its command, one for a disabled feature is refused",
   task = "diff.nvim/manual-checklist-run",
   steps = {

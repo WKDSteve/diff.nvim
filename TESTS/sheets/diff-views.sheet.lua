@@ -1,6 +1,7 @@
 -- Live check: the native views, section 5 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.views",
+  feature = "diff.views",
   title = "diff.nvim: view=vsplit, split and tab are native diffmode in their layout, :diffget works in each",
   task = "diff.nvim/manual-checklist-run",
   steps = {

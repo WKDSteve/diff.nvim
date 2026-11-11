@@ -2,6 +2,7 @@
 -- (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md). Nothing leaves the machine.
 return {
   id = "diff.url",
+  feature = "diff.url",
   title = "diff.nvim: a URL is fetched in the background, a non-2xx is an error, output=stat works on it",
   task = "diff.nvim/manual-checklist-run",
   requires = { { lua = [[vim.fn.executable("curl") == 1]], reason = "no curl on this machine" } },

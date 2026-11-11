@@ -1,6 +1,7 @@
 -- Live check: invalid setup() options, section 17 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.setup-options",
+  feature = "diff.validation",
   title = "diff.nvim: an invalid setup() option does not raise, its default applies, :checkhealth diff lists it",
   task = "diff.nvim/manual-checklist-run",
   steps = {

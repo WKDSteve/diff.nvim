@@ -1,6 +1,7 @@
 -- Live check: status() and on_done, section 12 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.api",
+  feature = "diff.statusline",
   title = "diff.nvim: status() counts the active diffs in a live statusline, on_done fires once, also on a cancel",
   task = "diff.nvim/manual-checklist-run",
   steps = {

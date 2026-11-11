@@ -1,6 +1,7 @@
 -- Live check: three-way diff, section 4 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.three-way",
+  feature = "diff.three-way",
   title = "diff.nvim: base= in a real conflict: three windows, only the left one takes changes, nonsense views are refused",
   task = "diff.nvim/manual-checklist-run",
   steps = {

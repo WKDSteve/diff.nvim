@@ -1,6 +1,7 @@
 -- Live check: the exit key and :DiffExit, section 10 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.exit",
+  feature = "diff.exit",
   title = "diff.nvim: <Esc><Esc> leaves a diff of the plugin, a native :diffthis only with native_diffthis; :DiffExit always",
   task = "diff.nvim/manual-checklist-run",
   steps = {

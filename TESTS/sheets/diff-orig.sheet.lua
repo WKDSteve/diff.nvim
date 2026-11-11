@@ -1,6 +1,7 @@
 -- Live check: :DiffOrig and :DiffClear, section 6 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.orig",
+  feature = "diff.orig",
   title = "diff.nvim: :DiffOrig is a native split whatever default_view says, :DiffClear leaves nothing behind",
   task = "diff.nvim/manual-checklist-run",
   steps = {

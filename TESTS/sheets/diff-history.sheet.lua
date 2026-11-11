@@ -1,6 +1,7 @@
 -- Live check: :DiffHistory, section 14 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.history",
+  feature = "diff.history",
   title = "diff.nvim: :DiffHistory lists newest first, diffs a commit against its parent, follows a rename, passes view and output",
   task = "diff.nvim/manual-checklist-run",
   steps = {

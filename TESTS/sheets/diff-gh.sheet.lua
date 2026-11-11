@@ -1,6 +1,7 @@
 -- Live check: gh without gitsigns, and who owns the key, section 16 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.gh",
+  feature = "diff.gh",
   title = "diff.nvim: gh is the plugin's map and says when gitsigns is missing; an own gh stays; keymaps = false binds nothing",
   task = "diff.nvim/manual-checklist-run",
   steps = {

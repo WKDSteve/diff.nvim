@@ -1,6 +1,7 @@
 -- Live check: image pairs without a real gallery, section 9 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.image",
+  feature = "diff.image",
   title = "diff.nvim: an image pair warns without images.nvim, image_compare = false is a text diff, SVG is text",
   task = "diff.nvim/manual-checklist-run",
   steps = {

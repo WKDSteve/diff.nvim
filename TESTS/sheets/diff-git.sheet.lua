@@ -1,6 +1,7 @@
 -- Live check: git:{rev} specifiers, section 3 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.git",
+  feature = "diff.git",
   title = "diff.nvim: git:{rev} leaves the work tree alone, a range is two revisions, a rename fails until the path is given",
   task = "diff.nvim/manual-checklist-run",
   steps = {

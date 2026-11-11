@@ -1,6 +1,7 @@
 -- Live check: typos and contradictions at the command line, section 17 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.validation",
+  feature = "diff.validation",
   title = "diff.nvim: an unknown key warns and is ignored, an unknown view or a source= with base= is an error and opens nothing",
   task = "diff.nvim/manual-checklist-run",
   steps = {

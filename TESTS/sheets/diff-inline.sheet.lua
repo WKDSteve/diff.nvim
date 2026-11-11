@@ -1,6 +1,7 @@
 -- Live check: view=inline and float with the word diff, section 5 (task diff.nvim/manual-checklist-run; ALL/manual-test-checklists/diff.md).
 return {
   id = "diff.inline",
+  feature = "diff.inline",
   title = "diff.nvim: view=inline and float show a unified diff, word highlights only on paired lines and on whole codepoints",
   task = "diff.nvim/manual-checklist-run",
   steps = {

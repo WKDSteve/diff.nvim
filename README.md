@@ -68,3 +68,21 @@ each page answers.
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+<!-- connections:begin (written by the app-icons tool of the workshop; change integrations.json there, not this block) -->
+## Connections
+
+![diff.nvim: what it uses and what uses it](assets/graphs/diff.nvim.png)
+
+**Uses**
+
+- [images.nvim](https://github.com/WKDSteve/images.nvim): The image compare of diff.nvim uses images.nvim (`features.image_compare`). ([picture](assets/graphs/pair/diff.nvim--images.nvim.png))
+- [pickers.nvim](https://github.com/WKDSteve/pickers.nvim): diff.nvim picks its sources through the engines of pickers.nvim (`pickers.engines`) when it is installed. ([picture](assets/graphs/pair/diff.nvim--pickers.nvim.png))
+- [ui.nvim](https://github.com/WKDSteve/ui.nvim): diff.nvim asks for the file or the buffer to compare with `ui.kit.input` of ui.nvim. ([picture](assets/graphs/pair/diff.nvim--ui.nvim.png))
+- [lib.nvim](https://github.com/WKDSteve/lib.nvim): the shared base of the plugins.
+
+**Used by**
+
+- [data.nvim](https://github.com/WKDSteve/data.nvim): The preview of data.nvim (`data.preview`) is available when diff.nvim is installed. ([picture](assets/graphs/pair/data.nvim--diff.nvim.png))
+- [gitsuite.nvim](https://github.com/WKDSteve/gitsuite.nvim): The diff commands of gitsuite.nvim run through diff.nvim, for example `require("diff").run("target=git:HEAD")`. ([picture](assets/graphs/pair/gitsuite.nvim--diff.nvim.png))
+<!-- connections:end -->

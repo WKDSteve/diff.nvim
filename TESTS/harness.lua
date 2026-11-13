@@ -1,5 +1,5 @@
 -- TESTS/harness.lua — tiny assertion helper shared by the spec files.
--- Returned to each spec by TESTS/run.lua.
+-- Handed to each spec (`return function(H) ... end`) by testing.nvim's dialect `h` (.testing.lua).
 
 local H = {}
 

@@ -10,11 +10,12 @@ return function(H)
   local without = bridge.resolve()
   eq(without, nil, "resolve() is nil when pickers.nvim is not installed")
 
-  -- Best-effort: add a sibling pickers.nvim checkout to rtp (same pattern as
-  -- run.lua's lib.nvim detection). If it's not present, the nil-fallback
-  -- check above already covers the module's core contract.
+  -- Best-effort: add a sibling pickers.nvim checkout to rtp. If it's not
+  -- present, the nil-fallback check above already covers the module's core
+  -- contract, and the adapter half is reported as n/a.
   local candidate = vim.fs.normalize(vim.fn.getcwd() .. "/../pickers.nvim")
   if vim.fn.isdirectory(candidate .. "/lua/pickers") ~= 1 then
+    print("n/a  pickers.nvim adapter: no sibling checkout ../pickers.nvim")
     return
   end
   -- Both are put back at the end: the sibling checkout must not stay on the search path for

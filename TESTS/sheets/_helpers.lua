@@ -2,9 +2,13 @@
 -- (`testing.sheet` only reads *.sheet.lua); a sheet's first step runs it with `dofile`, the child's cwd is the
 -- project root. The directory is in the spec's @cache-inputs, so a change here re-runs the sheets.
 
--- ui.nvim holds the `ui.kit` the pickers and prompts of :Diff use. TESTS/minimal_init.lua finds it (a missing one is
--- fatal, so this is never a skip that does not run on CI) and leaves it to the sheets, the specs run without it.
-vim.opt.rtp:append(vim.g.diff_sheets_ui_nvim)
+-- ui.nvim holds the `ui.kit` the pickers and prompts of :Diff use. TESTS/minimal_init.lua looks it up but, as a
+-- SHEETS_ONLY dependency, neither puts it on the runtimepath nor fails when it is missing: then
+-- vim.g.diff_sheets_ui_nvim is nil. A sheet that needs it says so in `requires`, which makes it a reported n/a outside
+-- CI and red under CI; the specs run without it.
+if vim.g.diff_sheets_ui_nvim ~= nil then
+  vim.opt.rtp:append(vim.g.diff_sheets_ui_nvim)
+end
 
 vim.opt.shortmess:append("I")
 vim.o.swapfile = false

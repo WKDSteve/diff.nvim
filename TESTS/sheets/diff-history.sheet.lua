@@ -4,6 +4,12 @@ return {
   feature = "diff.history",
   title = "diff.nvim: :DiffHistory lists newest first, diffs a commit against its parent, follows a rename, passes view and output",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

@@ -4,6 +4,12 @@ return {
   feature = "diff.compare",
   title = "diff.nvim: bare :Diff asks with ui.kit, a file or a buffer number opens the diff, a range is the source",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

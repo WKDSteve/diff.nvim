@@ -4,6 +4,12 @@ return {
   feature = "diff.validation",
   title = "diff.nvim: an unknown key warns and is ignored, an unknown view or a source= with base= is an error and opens nothing",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

@@ -4,6 +4,12 @@ return {
   feature = "diff.git",
   title = "diff.nvim: git:{rev} leaves the work tree alone, a range is two revisions, a rename fails until the path is given",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

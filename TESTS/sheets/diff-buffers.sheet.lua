@@ -4,6 +4,12 @@ return {
   feature = "diff.buffers",
   title = "diff.nvim: :DiffBuffers lists the other listed buffers, :DiffClear closes its own windows and no others",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

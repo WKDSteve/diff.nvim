@@ -21,11 +21,13 @@ bash scripts/test.sh
 
 The suite is run by [testing.nvim](https://github.com/WKDSteve/testing.nvim).
 Nothing in it needs a fuzzy-picker backend, images.nvim, or pickers.nvim
-installed; only testing.nvim and lib.nvim are required, and `$TESTING_NVIM_DIR` /
-`$LIB_NVIM_DIR` point at them when they are not sibling checkouts. Two specs talk to the outside world on purpose —
-`git_spec.lua` runs a real `git show` against this repository, and
-`url_spec.lua` attempts one HTTPS round-trip — and both skip rather than fail
-when git or the network is unavailable.
+installed; the specs need testing.nvim and lib.nvim, the test sheets also
+ui.nvim (a sheet that needs it is n/a without it, red under CI), and
+`$TESTING_NVIM_DIR` / `$LIB_NVIM_DIR` / `$UI_NVIM_DIR` point at them when they
+are not sibling checkouts. One spec talks to the outside world on purpose:
+`git_spec.lua` runs a real `git show` against this repository (reported as n/a
+when git is unavailable). `url_spec.lua` and `url_stub_spec.lua` never touch
+the network: the transport is checked against a `vim.system` double.
 
 This same command runs in CI on every push and pull request via
 [.github/workflows/ci.yml](../.github/workflows/ci.yml), alongside

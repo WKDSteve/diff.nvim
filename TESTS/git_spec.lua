@@ -1,6 +1,6 @@
 -- TESTS/git_spec.lua — core.git: is_git_spec + resolve against HEAD.
 --
--- Runs from the repo root (see run.lua), so the working directory is a real
+-- Runs from the repo root (testing.nvim starts each spec there), so the working directory is a real
 -- git repository and a committed file can be resolved for real.
 
 return function(H)
@@ -16,6 +16,7 @@ return function(H)
 
   -- Skip the live resolution when git is unavailable (keeps CI portable).
   if vim.fn.executable("git") ~= 1 or type(vim.system) ~= "function" then
+    print("n/a  live git resolution: git or vim.system is not available")
     return
   end
 

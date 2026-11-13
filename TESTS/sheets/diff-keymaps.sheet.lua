@@ -4,6 +4,12 @@ return {
   feature = "diff.keymaps",
   title = "diff.nvim: only gh is bound by default; a shortcut runs its command, one for a disabled feature is refused",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

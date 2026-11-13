@@ -4,6 +4,12 @@ return {
   feature = "diff.statusline",
   title = "diff.nvim: status() counts the active diffs in a live statusline, on_done fires once, also on a cancel",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

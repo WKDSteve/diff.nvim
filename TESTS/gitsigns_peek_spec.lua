@@ -4,7 +4,7 @@
 -- TESTS/gitsigns_peek_spec.lua — the `gh` gitsigns hunk-preview keymap
 -- (moved from my.nvim, cross-feature report finding F2).
 --
--- gitsigns.nvim is not on this suite's runtimepath (see run.lua), so
+-- gitsigns.nvim is not on this suite's runtimepath (see TESTS/minimal_init.lua), so
 -- invoking the installed callback naturally exercises the "gitsigns absent"
 -- branch here -- exactly the environment most of this fleet's headless test
 -- runs are, and the case the module degrades to a notification for rather

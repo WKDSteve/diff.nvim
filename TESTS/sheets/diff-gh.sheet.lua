@@ -4,6 +4,12 @@ return {
   feature = "diff.gh",
   title = "diff.nvim: gh is the plugin's map and says when gitsigns is missing; an own gh stays; keymaps = false binds nothing",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

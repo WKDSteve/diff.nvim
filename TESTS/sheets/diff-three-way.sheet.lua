@@ -4,6 +4,12 @@ return {
   feature = "diff.three-way",
   title = "diff.nvim: base= in a real conflict: three windows, only the left one takes changes, nonsense views are refused",
   task = "diff.nvim/manual-checklist-run",
+  requires = {
+    {
+      lua = "vim.g.diff_sheets_ui_nvim ~= nil",
+      reason = "ui.nvim not found by TESTS/minimal_init.lua",
+    },
+  },
   steps = {
     {
       lua = [[dofile(vim.fn.getcwd() .. "/TESTS/sheets/_helpers.lua")

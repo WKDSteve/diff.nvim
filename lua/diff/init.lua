@@ -97,7 +97,14 @@ end
 ---     end,
 ---   })
 --- <
----@param raw_args? string
+---
+---The arguments can be a table with the same keys instead of the string. A
+---value of the table is taken as it is, so this is the way to hand over a path
+---with a blank in it (the string grammar ends a value at the first blank):
+--- >lua
+---   require("diff").run({ source = "notes/old draft.md", target = "notes/new draft.md" })
+--- <
+---@param raw_args? string|table<string, string|integer>
 ---@param opts? DiffNvim.RunOpts
 ---@return nil
 function M.run(raw_args, opts)

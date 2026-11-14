@@ -48,6 +48,70 @@ function M.parse_args(raw, known)
   return out, unknown
 end
 
+---The arguments of a run given as a table (`{ target = "a b.lua", view = "inline" }`) instead of
+---the `key=value` string: the same keys, with the same unknown-key report, and a value is taken
+---as it is. That is the point of the form: the string grammar ends a value at the first blank,
+---so a path with one in it cannot be written there.
+---
+---A value is a non-empty string, or a number where a buffer number may stand (kept as its
+---text, which is what the string form yields too). Anything else is no value: the first such
+---key is named in `err` and the caller must not run on the rest.
+---@param args table
+---@param known? string[]  Recognized keys for this call site; omit to skip the unknown-key check entirely
+---@return table<string, string> kv
+---@return string[] unknown  Keys present in `args` but not in `known`, sorted (always empty when `known` is omitted)
+---@return string|nil err
+function M.args_from_table(args, known)
+  ---@type table<string, string>
+  local out = {}
+  ---@type string[]
+  local unknown = {}
+  if type(args) ~= "table" then
+    return out, unknown, nil
+  end
+  ---@type table<string, boolean>|nil
+  local known_set = nil
+  if type(known) == "table" then
+    known_set = {}
+    for _, k in ipairs(known) do
+      known_set[k] = true
+    end
+  end
+  ---@type string[]
+  local bad = {}
+  for key, value in pairs(args) do
+    local name = tostring(key)
+    if type(key) ~= "string" then
+      bad[#bad + 1] = name
+    elseif type(value) == "string" and value ~= "" then
+      out[key] = value
+    elseif
+      type(value) == "number"
+      and value == math.floor(value)
+      and value ~= math.huge
+      and value ~= -math.huge
+    then
+      out[key] = tostring(math.floor(value))
+    else
+      bad[#bad + 1] = name
+    end
+    if known_set and type(key) == "string" and not known_set[key] then
+      unknown[#unknown + 1] = key
+    end
+  end
+  table.sort(unknown)
+  if #bad > 0 then
+    table.sort(bad)
+    return out,
+      unknown,
+      string.format(
+        "arg %s must be a non-empty string (or a buffer number), given as a named key",
+        bad[1]
+      )
+  end
+  return out, unknown, nil
+end
+
 ---A file's lines, in the shape a buffer's lines have.
 ---
 ---`readfile()` hands a NUL byte back as "\n" inside the line, and

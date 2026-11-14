@@ -745,7 +745,11 @@ end
 
 ---Parse raw command arguments and launch the diff workflow.
 ---When `target` is absent an interactive picker is shown first.
----@param raw_args string  Raw <args> delivered by nvim_create_user_command
+---
+---The arguments are the `key=value` string of `:Diff`, or the same keys as a table
+---(`{ source = "a b.lua", target = "c.lua" }`): a value of the table is taken as it is, so a path
+---with a blank in it can be given there (the string ends a value at the first blank).
+---@param raw_args string|table<string, string|integer>  Raw <args> delivered by nvim_create_user_command, or the keys as a table
 ---@param range? DiffNvim.Range  Selected line span (only when :Diff got a range)
 ---@param run_opts? DiffNvim.RunOpts  Caller-side options (`on_done`)
 ---@return nil
@@ -771,8 +775,21 @@ function M.run(raw_args, range, run_opts)
   }
 
   local cfg = config.get().diff
-  local kv, unknown_kv =
-    resolve.parse_args(type(raw_args) == "string" and raw_args or "", KNOWN_RUN_KEYS)
+  local kv, unknown_kv
+  if type(raw_args) == "table" then
+    local bad
+    kv, unknown_kv, bad = resolve.args_from_table(raw_args, KNOWN_RUN_KEYS)
+    if bad then
+      -- Not run on what is left: a `target` that was dropped for its type would open the picker
+      -- instead, which is not what a caller that named a target asked for.
+      notify.error(bad)
+      fail(bad)
+      return
+    end
+  else
+    kv, unknown_kv =
+      resolve.parse_args(type(raw_args) == "string" and raw_args or "", KNOWN_RUN_KEYS)
+  end
   warn_unknown_keys(unknown_kv, KNOWN_RUN_KEYS)
 
   -- target=git:<rev1>..<rev2> is sugar for diffing the file directly between

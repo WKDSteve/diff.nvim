@@ -25,6 +25,60 @@ plus an optional table of caller-side options — currently just `on_done`.
 `diff.diff_history`'s `args` additionally accepts a leading path, exactly
 like `:DiffHistory [path] [view=…] [output=…]`.
 
+## The arguments as a table
+
+`diff.run` also takes the arguments as a table with the same keys. A value of
+the table is taken as it is, which the string cannot do: its grammar ends a
+value at the first blank, so a path with a blank in it has no spelling there.
+
+```lua
+require("diff").run({ source = "notes/old draft.md", target = "notes/new draft.md" })
+require("diff").run({ target = 42, view = "inline" })                 -- a buffer number may be a number
+require("diff").run({ source = "old src", target = "new src" }, opts) -- two folders: the directory diff
+```
+
+- The keys are the ones of `:Diff` (`target`, `source`, `base`, `view`,
+  `output`). An unknown key is reported and ignored, as in the string.
+- A value is a specifier, as in the string: `"current"`, `"clipboard"`,
+  `"ask"`, `git:<rev>`, a URL, a buffer number or a path. So a file that is
+  named like one of those needs a path that says so (`./clipboard`).
+- A value is a non-empty string, or a whole number where a buffer number may
+  stand. Anything else (`true`, a table, an empty string, a positional entry)
+  is an error: nothing runs, the message names the key, and `on_done` gets
+  `nil` and that message. No picker opens for a `target` that was given wrong.
+
+## In a tree view
+
+`setup()` registers one action, `diff.compare`, at `lib.nvim.tree.registry`:
+"Compare". A tree that reads the registry (the own tree of
+[filetree.nvim](https://github.com/WKDSteve/filetree.nvim), `adapter =
+"native"`) offers it on every node that is a file or a folder on disk, in its
+context menu and its action list.
+
+| The selection | What is compared |
+| --- | --- |
+| two marked files | the first against the second, in `diff.default_view` |
+| two marked folders | the first against the second: the [directory diff](commands.md) |
+| one file (no marks) | the file of the editor window against it; that window's live buffer is the left-hand side, so `:diffget` / `:diffput` write into it |
+
+Anything else says what is missing and compares nothing: one folder ("mark a
+second folder"), a folder with a file, more than two marks, the file of the
+editor window against itself, one file with no editor window that shows a
+file. The diff starts from the editor window, never from the tree's; in a tab
+page that has nothing but the tree, two files open in a tab of their own.
+
+```lua
+require("diff").setup({
+  tree = { key = "<leader>dc" }, -- also on a key in the tree buffer
+  -- tree = false,               -- not offered
+})
+```
+
+Without a tree that reads the registry the entry is never looked at.
+`require("diff.integrations.tree").compare(nodes, ctx)` does the same for a
+list of `{ path = ... }` and returns whether it ran; `.plan(nodes, ctx)` only
+decides (the arguments for `run`, or `nil` and the reason).
+
 ## Knowing when a diff has finished: `on_done`
 
 ```lua

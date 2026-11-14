@@ -1,7 +1,7 @@
 # Around it
 
 diff.nvim detects a couple of sibling plugins at runtime and uses them when
-present. Both are soft: without them, everything else works unchanged.
+present. All of them are soft: without them, everything else works unchanged.
 
 [**pickers.nvim**](https://github.com/WKDSteve/pickers.nvim) — when it is
 installed, diff.nvim detects it and uses its fuzzy picker
@@ -15,6 +15,12 @@ configuration needed; set `select_fn` for a different picker, or
 `:Diff target=new.png source=old.png` show the two images side by side
 instead of comparing their bytes. See
 [Configuration](configuration.md) for `diff.image_compare`.
+
+[**filetree.nvim**](https://github.com/WKDSteve/filetree.nvim) — its own tree
+offers "Compare" on its nodes: two marked files or folders against each other,
+or the file under the cursor against the file of the editor window. diff.nvim
+only announces the action at lib.nvim's registry; `tree = false` leaves it
+out. See [Lua API › In a tree view](api.md#in-a-tree-view).
 
 [**lib.nvim**](https://github.com/WKDSteve/lib.nvim) is the one real,
 non-optional dependency — see [Requirements](installation.md#requirements).

@@ -113,6 +113,7 @@ vim-plug: >vim
     },
     select_fn        = nil,         -- optional vim.ui.select replacement
     use_pickers_nvim = true,        -- auto-detect pickers.nvim as the picker engine
+    tree             = true,        -- "Compare" on nodes of a tree view, |diff-tree|
   })
 <
 
@@ -187,6 +188,12 @@ use_pickers_nvim ~
   the picker engine when `select_fn` is unset. Set `false` to always use the
   ui.kit chooser instead (which still honors a real `vim.ui.select`
   override), even if pickers.nvim is installed. Default: `true`.
+
+tree ~
+  "Compare" on nodes of a tree view, see |diff-tree|. `true` offers it in
+  the tree's menu and action list, `{ key = "<lhs>" }` (a key or a list of
+  keys) also puts it on a key in the tree buffer, `false` does not offer
+  it. Default: `true`.
 
 `setup()` validates opts before merging them over the defaults above: an
 unknown key or a value that doesn't fit its option is dropped instead of
@@ -500,6 +507,26 @@ enable({opts})                                              *diff.enable()*
 run({raw_args}, {opts})                                        *diff.run()*
   Run a diff. {raw_args} uses the same grammar as |:Diff|. {opts} is an
   optional table of caller-side options — see |diff-on-done|.
+  {raw_args} may be a table with the same keys instead. A value of the
+  table is taken as it is, so a path with a blank in it can be given there
+  (the string ends a value at the first blank): >lua
+    require("diff").run({ source = "old draft.md", target = "new draft.md" })
+<
+  A value is a non-empty string, or a whole number for a buffer. Anything
+  else is an error that names the key; nothing runs.
+
+                                                                *diff-tree*
+In a tree view ~
+  setup() registers the action `diff.compare` at `lib.nvim.tree.registry`.
+  The own tree of filetree.nvim (`adapter = "native"`) offers it on every
+  file and folder, in its context menu and its action list:
+    two marked files     the first against the second, in the default view
+    two marked folders   the first against the second: the directory diff
+    one file, no marks   the file of the editor window against it, with
+                         that window's buffer as the live left-hand side
+  Anything else says what is missing and compares nothing. The diff starts
+  from the editor window, never from the tree's. See the `tree` option in
+  |diff-config|.
 
 clear()                                                      *diff.clear()*
   Close all diff windows and disable diffmode.

@@ -54,6 +54,12 @@ require("diff").setup({
   },
   select_fn        = nil,          -- optional vim.ui.select replacement (DI)
   use_pickers_nvim = true,         -- auto-detect pickers.nvim as the picker engine
+  -- "Compare" on nodes of a tree view (filetree.nvim's own tree): two marked
+  -- files or folders, or the file under the cursor against the editor's. true:
+  -- in the tree's menu and action list; { key = "<leader>dc" } (a key or a
+  -- list of keys): on that key in the tree buffer as well; false: not offered.
+  -- See api.md, "In a tree view".
+  tree = true,
 })
 ```
 

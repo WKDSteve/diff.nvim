@@ -115,6 +115,12 @@ local DEFAULTS = {
   -- to always use the ui.kit chooser instead (which still honors a
   -- real vim.ui.select override), even if pickers.nvim is installed.
   use_pickers_nvim = true,
+  -- "Compare" on nodes of a tree view (the own tree of filetree.nvim reads it
+  -- from lib.nvim's registry): two marked files or folders against each
+  -- other, or the file under the cursor against the file of the editor
+  -- window. true: in the tree's menu and action list; { key = "<lhs>" }: on
+  -- that key in the tree buffer as well; false: not offered.
+  tree = true,
 }
 
 return DEFAULTS

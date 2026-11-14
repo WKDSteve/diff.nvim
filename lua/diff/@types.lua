@@ -178,6 +178,11 @@
 ---@field commands  DiffNvim.Config.Commands
 ---@field select_fn (fun(items: any[], opts: table, on_choice: fun(item: any, idx: integer|nil)): nil)|nil  Optional vim.ui.select replacement (dependency injection)
 ---@field use_pickers_nvim boolean  Auto-detect pickers.nvim as the picker engine when select_fn is unset (default true)
+---@field tree boolean|DiffNvim.Opts.Tree  "Compare" on nodes of a tree view (default true: offered without a key), see diff.integrations.tree
+
+--- The table form of the `tree` option.
+---@class DiffNvim.Opts.Tree
+---@field key? string|string[]|false  Key(s) in the tree buffer (default: none; the action is in the menu)
 
 -- #####################################################################
 -- setup() input
@@ -196,6 +201,7 @@
 ---@field commands?         DiffNvim.Opts.Commands
 ---@field select_fn?        (fun(items: any[], opts: table, on_choice: fun(item: any, idx: integer|nil)): nil)|nil  Optional vim.ui.select replacement (dependency injection)
 ---@field use_pickers_nvim? boolean  Auto-detect pickers.nvim as the picker engine when select_fn is unset (default true)
+---@field tree?             boolean|DiffNvim.Opts.Tree  "Compare" on nodes of a tree view: `true` (default) offers it, `{ key = "<lhs>" }` also puts it on a key in the tree buffer, `false` does not offer it
 
 ---@class DiffNvim.Opts.Features
 ---@field diff?             boolean  Register the :Diff / :DiffClear commands

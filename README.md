@@ -56,7 +56,7 @@ each page answers.
 ### The rest
 
 - [Features](docs/FEATURES.md) — everything diff.nvim does, one section per capability.
-- [Around it](docs/around-it.md) — pickers.nvim and images.nvim, and what changes when they're installed.
+- [Around it](docs/around-it.md) — pickers.nvim, images.nvim and filetree.nvim ("Compare" on the nodes of its tree), and what changes when they're installed.
 - [Architecture](docs/architecture.md) — module layout and load order.
 - [Contributing](docs/CONTRIBUTING.md) — ground rules, project layout, and how to add a source.
 - [Feedback](https://github.com/WKDSteve/diff.nvim/issues) — bugs, features, questions; broader discussion in [Discussions](https://github.com/WKDSteve/diff.nvim/discussions).

@@ -203,6 +203,21 @@ default; `"replace"` resets the list to just the latest diff each time). See
 :Diff source=./old_src target=./new_src output=stat  " directory diff: per-file summary
 ```
 
+### A path with a blank in it
+
+A value of `key=value` ends at the first blank, so `:Diff target=my notes.md`
+reads `target=my` and a stray word. From Lua the same arguments can be given
+as a table, where a value is taken as it is:
+
+```lua
+require("diff").run({ source = "notes/old draft.md", target = "notes/new draft.md" })
+```
+
+Same keys, same unknown-key report; see
+[Lua API › The arguments as a table](api.md#the-arguments-as-a-table). A tree
+view hands its paths over this way
+([Lua API › In a tree view](api.md#in-a-tree-view)).
+
 ## `:DiffClear`
 
 Closes every scratch buffer diff.nvim created and disables diffmode in every

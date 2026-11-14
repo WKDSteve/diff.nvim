@@ -47,6 +47,22 @@ function M.register(cfg)
   require("diff.bindings.keymaps").register_shortcuts(cfg)
 
   require("diff.bindings.autocmds").register()
+
+  -- "Compare" on nodes of a tree view: an entry at lib.nvim's registry, read
+  -- by filetree.nvim's own tree when there is one. `tree = false` leaves it
+  -- out. pcall'd for the same reason as the profile above: an optional
+  -- integration must not make setup() raise.
+  pcall(function()
+    local integration = require("diff.integrations.tree")
+    local tree = cfg.tree
+    if tree == false then
+      integration.unregister()
+    elseif type(tree) == "table" then
+      integration.register(tree)
+    else
+      integration.register()
+    end
+  end)
 end
 
 return M

@@ -176,6 +176,36 @@ local KNOWN = {
   },
   select_fn = true,
   use_pickers_nvim = { ok = is_boolean, expect = "a boolean" },
+  tree = {
+    ok = function(v)
+      if type(v) == "boolean" then
+        return true
+      end
+      if type(v) ~= "table" then
+        return false
+      end
+      for name in pairs(v) do
+        if name ~= "key" then
+          return false
+        end
+      end
+      local key = v.key
+      if key == nil or key == false then
+        return true
+      elseif type(key) == "string" then
+        return key ~= ""
+      elseif type(key) == "table" and vim.islist(key) and #key > 0 then
+        for _, lhs in ipairs(key) do
+          if type(lhs) ~= "string" or lhs == "" then
+            return false
+          end
+        end
+        return true
+      end
+      return false
+    end,
+    expect = "a boolean or { key = <lhs> | { <lhs>, ... } | false }",
+  },
 }
 
 ---@internal

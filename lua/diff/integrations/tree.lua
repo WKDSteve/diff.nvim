@@ -51,11 +51,15 @@ local function kind_of(path)
   return nil
 end
 
----Two spellings of one path, as far as that can be told without the disk.
+---Whether two paths are one file, however each is spelled.
 ---@param a string
 ---@param b string
 ---@return boolean
 local function same_path(a, b)
+  -- The real path where the disk has one: a buffer name and a path of the tree can spell one
+  -- file two ways (macOS names a buffer /private/var/... for a file reached as /var/..., Windows
+  -- keeps an 8.3 short name or a junction as it was given).
+  a, b = vim.uv.fs_realpath(a) or a, vim.uv.fs_realpath(b) or b
   a, b = vim.fs.normalize(a), vim.fs.normalize(b)
   if fn.has("win32") == 1 then
     a, b = a:lower(), b:lower()

@@ -119,6 +119,18 @@ return function(H)
     eq(plan, nil, "the file of the editor window against itself is nothing to compare")
     ok(tostring(why):find("file of the editor window", 1, true) ~= nil, "... and says so: " .. why)
 
+    -- ... also when the node reaches that file through another spelling (a link to its folder)
+    local link = dir .. "linked"
+    if vim.uv.fs_symlink(left_dir, link, { dir = true }) then
+      plan, why = tree.plan({ { path = link .. "/a b.txt" } }, ctx)
+      eq(plan, nil, "the editor's file through a link is still that file")
+      ok(
+        tostring(why):find("file of the editor window", 1, true) ~= nil,
+        "... and says so: " .. why
+      )
+      vim.uv.fs_unlink(link)
+    end
+
     plan, why = tree.plan({ { path = left_dir } }, ctx)
     eq(plan, nil, "one folder has nothing to be compared with")
     ok(tostring(why):find("second folder", 1, true) ~= nil, "... and asks for a second: " .. why)

@@ -153,7 +153,9 @@ When both sides resolve to real, existing directories, `:Diff` compares the
 two trees file-by-file and produces a per-file summary (`M`/`A`/`D` +
 `+added -removed` + path) instead of a single, meaningless unified diff over
 two trees' concatenated bytes. Hidden path segments (`.git`, `.hg`, …) are
-always excluded. `view=` is ignored; `output=` gets its own handling:
+always excluded. `view=` is ignored, except `view=tab` (the summary opens in a
+tab page of its own instead of a split of the current window); `output=` gets
+its own handling:
 `buffer` (default, one scratch buffer with the summary), `prompt`, `file`,
 `clipboard` (the same summary delivered differently), or `stat` (just the
 rolled-up file-count + `+N -M` total — and, with `opts.diff.stat_list` set,

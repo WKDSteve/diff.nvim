@@ -525,8 +525,9 @@ In a tree view ~
     one file, no marks   the file of the editor window against it, with
                          that window's buffer as the live left-hand side
   Anything else says what is missing and compares nothing. The diff starts
-  from the editor window, never from the tree's. See the `tree` option in
-  |diff-config|.
+  from the editor window, never from the tree's; in a tab page that has
+  nothing but the tree, two files or two folders open in a tab of their
+  own. See the `tree` option in |diff-config|.
 
 clear()                                                      *diff.clear()*
   Close all diff windows and disable diffmode.

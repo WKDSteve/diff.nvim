@@ -208,15 +208,19 @@ end
 ---`core.init` accepts, minus the ones that only make sense for a single
 ---unified diff: `view=` is ignored (there is no native-diffmode notion of
 ---"diff these two trees"), and `output=buffer` always shows the summary in
----one scratch buffer rather than a side-by-side pair.
+---one scratch buffer rather than a side-by-side pair. The one exception is
+---`view=tab`: the summary opens in a tab page of its own instead of a split
+---of the current window (which may be a narrow side window, such as a tree
+---in a tab page that has nothing else).
 ---@param source_dir string
 ---@param target_dir string
 ---@param source_label string
 ---@param target_label string
 ---@param output DiffNvim.Output
 ---@param cfg DiffNvim.Config.Diff
+---@param view? DiffNvim.View
 ---@return DiffNvim.Result|nil result, string|nil err
-function M.run(source_dir, target_dir, source_label, target_label, output, cfg)
+function M.run(source_dir, target_dir, source_label, target_label, output, cfg, view)
   ---A directory diff never opens a native-diffmode pair, so `view` stays nil
   ---in its result -- see the moduledoc above for why `view=` is ignored here.
   ---@param fields table
@@ -302,7 +306,11 @@ function M.run(source_dir, target_dir, source_label, target_label, output, cfg)
 
   -- output == "buffer" (default) — one scratch buffer, no native diffmode.
   local buf = scratch.create(lines, string.format("[DirDiff] %s -> %s", source_label, target_label))
-  vim.cmd(string.format("silent! split | buffer %d", buf))
+  if view == "tab" then
+    vim.cmd(string.format("silent! tab sbuffer %d", buf))
+  else
+    vim.cmd(string.format("silent! split | buffer %d", buf))
+  end
   return result({ buffers = { buf }, windows = { vim.api.nvim_get_current_win() } })
 end
 

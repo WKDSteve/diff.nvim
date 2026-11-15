@@ -143,9 +143,9 @@ function M.plan(nodes, ctx)
     end
     ---@type table<string, string>
     local args = { source = paths[1], target = paths[2] }
-    -- Two files from a tab page that has no window but the tree: a tab of its own, which needs
-    -- no window to split. (A directory diff ignores the view.)
-    if a == "file" and not win then
+    -- Two files or two folders from a tab page that has no window but the tree: a tab of its
+    -- own, which needs no window to split (the directory diff takes no other view).
+    if not win then
       args.view = "tab"
     end
     return { args = args, win = win }, nil

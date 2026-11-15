@@ -187,7 +187,7 @@ return function(H)
     eq(plan.win, nil, "without an editor window there is none to start from")
     eq(plan.args.view, "tab", "... so two files open in a tab of their own")
     plan = tree.plan({ { path = left_dir }, { path = right_dir } }, ctx)
-    eq(plan.args.view, nil, "a directory diff has no view to choose")
+    eq(plan.args.view, "tab", "... and so do two folders")
     local none, why = tree.plan({ { path = right } }, ctx)
     eq(none, nil, "one file has no editor window to be compared with")
     ok(why:find("no editor window", 1, true) ~= nil, "... and says so: " .. why)
@@ -277,6 +277,27 @@ return function(H)
     ok(summary:find("a b.txt", 1, true) ~= nil, "two folders: the summary names the changed file")
     ok(summary:find("only here.txt", 1, true) ~= nil, "... and the added one")
     ok(vim.api.nvim_get_current_win() ~= tree_win, "... outside the tree window")
+  end
+
+  -- for real: two marked folders from a tab page that has nothing but the tree
+  do
+    reset()
+    vim.bo.buftype = "nofile"
+    local tree_win = vim.api.nvim_get_current_win()
+    local tree_tab = vim.api.nvim_get_current_tabpage()
+    notices(function()
+      entry().run({ { path = left_dir }, { path = right_dir } }, { win = tree_win })
+    end)
+    local summary =
+      table.concat(vim.api.nvim_buf_get_lines(vim.api.nvim_get_current_buf(), 0, -1, false), "\n")
+    ok(summary:find("a b.txt", 1, true) ~= nil, "tree alone: the summary is shown")
+    ok(vim.api.nvim_get_current_tabpage() ~= tree_tab, "... in a tab page of its own")
+    eq(#vim.api.nvim_tabpage_list_wins(tree_tab), 1, "... and the tree window is not split")
+    if vim.api.nvim_get_current_tabpage() ~= tree_tab then
+      vim.cmd("tabclose")
+    end
+    vim.api.nvim_set_current_win(tree_win)
+    vim.bo.buftype = ""
   end
 
   -- the option ------------------------------------------------------------------------

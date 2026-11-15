@@ -340,7 +340,8 @@ function M.execute(opts, ctx, on_done)
       tostring(opts.source),
       tostring(opts.target),
       opts.output,
-      config.get().diff
+      config.get().diff,
+      opts.view
     )
     if dir_result then
       done(dir_result)

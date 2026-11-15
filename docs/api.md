@@ -65,7 +65,8 @@ Anything else says what is missing and compares nothing: one folder ("mark a
 second folder"), a folder with a file, more than two marks, the file of the
 editor window against itself, one file with no editor window that shows a
 file. The diff starts from the editor window, never from the tree's; in a tab
-page that has nothing but the tree, two files open in a tab of their own.
+page that has nothing but the tree, two files or two folders open in a tab of
+their own.
 
 ```lua
 require("diff").setup({
@@ -113,7 +114,7 @@ to that, not instead of it.
 | Field | |
 |---|---|
 | `output` | The `output=` that produced this run |
-| `view` | The layout that was applied; `nil` when none was — the text outputs, and image/directory comparisons, which ignore `view=` |
+| `view` | The layout that was applied; `nil` when none was — the text outputs, and image/directory comparisons, which ignore `view=` (a directory diff takes `view=tab` for where its summary opens, and still reports `nil`) |
 | `buffers` | Scratch buffers diff.nvim created |
 | `windows` | Windows diff.nvim opened |
 | `path` | The file written, for `output=file` (`nil` otherwise) |

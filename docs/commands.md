@@ -83,8 +83,9 @@ existing directories, `:Diff` compares the two trees file-by-file instead of
 computing a single unified diff (which wouldn't mean anything over two
 whole trees' concatenated bytes). Hidden path segments (`.git`, `.hg`, …)
 are always excluded. `view=` is ignored — there is no native-diffmode
-notion of "diff these two trees" — and `output=` gets its own, smaller
-handling:
+notion of "diff these two trees" — except `view=tab`, which opens the
+summary in a tab page of its own instead of a split of the current window;
+`output=` gets its own, smaller handling:
 
 | `output=` | Directory-diff behavior |
 |---|---|

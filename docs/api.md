@@ -30,6 +30,10 @@ like `:DiffHistory [path] [view=…] [output=…]`.
 `diff.run` also takes the arguments as a table with the same keys. A value of
 the table is taken as it is, which the string cannot do: its grammar ends a
 value at the first blank, so a path with a blank in it has no spelling there.
+A path in the table is not expanded either: `~` and `$VAR` stay part of the
+name, so a file named `$HOME.md` is that file and not your home folder plus
+`.md` (the string form of `:Diff` keeps expanding; expand a path yourself with
+`vim.fs.normalize()` if you want that from Lua).
 
 ```lua
 require("diff").run({ source = "notes/old draft.md", target = "notes/new draft.md" })

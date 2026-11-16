@@ -100,7 +100,8 @@ end
 ---
 ---The arguments can be a table with the same keys instead of the string. A
 ---value of the table is taken as it is, so this is the way to hand over a path
----with a blank in it (the string grammar ends a value at the first blank):
+---with a blank in it (the string grammar ends a value at the first blank). A path
+---there is not expanded either: `~` and `$VAR` stay part of its name.
 --- >lua
 ---   require("diff").run({ source = "notes/old draft.md", target = "notes/new draft.md" })
 --- <

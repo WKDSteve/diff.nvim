@@ -11,7 +11,6 @@
 --- also diff its VCS internals.
 
 local fn = vim.fn
-local expand_path = require("lib.nvim.cross.fs.expand_path")
 
 local notify = require("diff.util.notify")
 local render = require("diff.core.render")
@@ -27,8 +26,9 @@ local M = {}
 ---("current"/"clipboard"/a buffer number/`git:<rev>`/`http(s)://…`) — none
 ---of those denote a directory.
 ---@param spec any
+---@param literal? boolean  the path is taken as it is (@see diff.core.resolve.spec_path)
 ---@return boolean
-function M.is_directory_spec(spec)
+function M.is_directory_spec(spec, literal)
   if type(spec) ~= "string" or spec == "" then
     return false
   end
@@ -38,9 +38,7 @@ function M.is_directory_spec(spec)
   if spec:sub(1, 4) == "git:" or spec:find("^https?://") then
     return false
   end
-  -- expand_path, not fn.expand (SEC-34): `spec` is the raw `:Diff <spec>`
-  -- argument -- fn.expand() would run a backtick span through &shell.
-  return fn.isdirectory(expand_path(spec)) == 1
+  return fn.isdirectory(resolve.spec_path(spec, literal)) == 1
 end
 
 ---@internal
@@ -62,18 +60,34 @@ end
 ---@param max_files integer
 ---@return string[]|nil rel_paths, string|nil err
 local function list_files(dir, max_files)
-  local abs = vim.fs.normalize(fn.fnamemodify(dir, ":p"))
+  -- `dir` is already the path it names (`~`/`$VAR` expanded or not by the caller): normalize must
+  -- not expand it a second time, or a folder named `$X` becomes the one `$X` names.
+  -- vim.fs.dir is not used for the same reason: it normalizes its path with expansion.
+  local abs = vim.fs.normalize(fn.fnamemodify(dir, ":p"), { expand_env = false })
   local rel_paths = {}
-  for name, kind in vim.fs.dir(abs, { depth = math.huge }) do
-    if kind == "file" and not has_hidden_segment(name) then
-      rel_paths[#rel_paths + 1] = name
-      if #rel_paths > max_files then
-        return nil,
-          string.format(
-            "more than %d files under %s — narrow the directory or raise opts.diff.directory_max_files",
-            max_files,
-            abs
-          )
+  ---@type string[]  relative folders still to walk ("" = `abs` itself)
+  local pending = { "" }
+  while #pending > 0 do
+    local rel_dir = table.remove(pending)
+    local handle = vim.uv.fs_scandir(rel_dir == "" and abs or (abs .. "/" .. rel_dir))
+    while handle do
+      local name, kind = vim.uv.fs_scandir_next(handle)
+      if not name then
+        break
+      end
+      local rel = rel_dir == "" and name or (rel_dir .. "/" .. name)
+      if kind == "directory" then
+        pending[#pending + 1] = rel
+      elseif kind == "file" and not has_hidden_segment(rel) then
+        rel_paths[#rel_paths + 1] = rel
+        if #rel_paths > max_files then
+          return nil,
+            string.format(
+              "more than %d files under %s — narrow the directory or raise opts.diff.directory_max_files",
+              max_files,
+              abs
+            )
+        end
       end
     end
   end
@@ -242,7 +256,7 @@ function M.run(source_dir, target_dir, source_label, target_label, output, cfg, 
     for _, e in ipairs(entries) do
       local dir_for_path = (e.status == "D") and source_dir or target_dir
       items[#items + 1] = {
-        filename = vim.fs.normalize(dir_for_path .. "/" .. e.rel),
+        filename = vim.fs.normalize(dir_for_path .. "/" .. e.rel, { expand_env = false }),
         lnum = 1,
         text = string.format("%s  +%d -%d  %s", e.status, e.added, e.removed, e.rel),
       }

@@ -6,7 +6,6 @@
 --- and finally dispatches to the right renderer via `execute()`.
 
 local api = vim.api
-local expand_path = require("lib.nvim.cross.fs.expand_path")
 
 local notify = require("diff.util.notify")
 local validate = require("diff.util.validate")
@@ -64,8 +63,9 @@ local CHOICE_BUFFER = "buffer number …"
 ---@param label string
 ---@param source_bufnr integer
 ---@param range DiffNvim.Range|nil
+---@param literal? boolean  a file path is taken as it is (@see resolve.spec_path)
 ---@return string[]|nil lines, string|nil err
-local function resolve_side(spec, label, source_bufnr, range)
+local function resolve_side(spec, label, source_bufnr, range, literal)
   if spec == "current" then
     if not validate.buf_valid(source_bufnr) then
       return nil, label .. " buffer is no longer valid"
@@ -76,7 +76,16 @@ local function resolve_side(spec, label, source_bufnr, range)
   end
   -- `git:<rev>` is deliberately absent here: it resolves through a subprocess
   -- and therefore lives in resolve_side_async below, next to the url path.
-  return resolve.resolve_lines(spec, label)
+  return resolve.resolve_lines(spec, label, literal)
+end
+
+---Whether `spec` is a path the table form of run() gave, which is taken as it is
+---(@see DiffNvim.Context.literal).
+---@param ctx DiffNvim.Context
+---@param spec any
+---@return boolean
+local function is_literal(ctx, spec)
+  return type(spec) == "string" and ctx.literal ~= nil and ctx.literal[spec] == true
 end
 
 ---Resolve a side to its lines and hand `(lines, err)` to `callback`. Async for
@@ -118,7 +127,7 @@ local function resolve_side_async(spec, label, ctx, range, callback)
     return
   end
 
-  callback(resolve_side(spec, label, ctx.source_bufnr, range))
+  callback(resolve_side(spec, label, ctx.source_bufnr, range, is_literal(ctx, spec)))
 end
 
 ---A label always has to stay on one line: `with_header` writes exactly two
@@ -288,8 +297,9 @@ end
 ---have none, so they resolve to `nil` (the entry is still listed, just not
 ---jump-able — see `push_stat_list`'s own doc comment).
 ---@param spec DiffNvim.Source|DiffNvim.Target
+---@param literal? boolean  the path is taken as it is (@see resolve.spec_path)
 ---@return { filename: string }|{ bufnr: integer }|nil
-local function stat_list_target(spec)
+local function stat_list_target(spec, literal)
   if type(spec) ~= "string" then
     return nil
   end
@@ -305,11 +315,9 @@ local function stat_list_target(spec)
   then
     return nil
   end
-  -- expand_path, not vim.fn.expand (SEC-34): `spec` is the raw `:Diff <spec>`
-  -- argument -- vim.fn.expand() would run a backtick span through &shell.
-  local path = expand_path(spec)
+  local path = resolve.spec_path(spec, literal)
   if vim.fn.filereadable(path) == 1 then
-    return { filename = vim.fs.normalize(vim.fn.fnamemodify(path, ":p")) }
+    return { filename = vim.fs.normalize(vim.fn.fnamemodify(path, ":p"), { expand_env = false }) }
   end
   return nil
 end
@@ -333,10 +341,14 @@ function M.execute(opts, ctx, on_done)
   -- image-compare check and the normal resolve_side_async pipeline below
   -- (which would just fail with "file not readable" on a directory path).
   local directory = require("diff.core.directory")
-  if directory.is_directory_spec(opts.source) and directory.is_directory_spec(opts.target) then
+  if
+    directory.is_directory_spec(opts.source, is_literal(ctx, opts.source))
+    and directory.is_directory_spec(opts.target, is_literal(ctx, opts.target))
+  then
+    -- The paths the two specs name, expanded here once: directory.run takes them as they are.
     local dir_result, dir_err = directory.run(
-      opts.source --[[@as string]],
-      opts.target --[[@as string]],
+      resolve.spec_path(opts.source --[[@as string]], is_literal(ctx, opts.source)),
+      resolve.spec_path(opts.target --[[@as string]], is_literal(ctx, opts.target)),
       tostring(opts.source),
       tostring(opts.target),
       opts.output,
@@ -356,7 +368,12 @@ function M.execute(opts, ctx, on_done)
   -- diff.features.image_compare's moduledoc for why). "current" (a live
   -- buffer) never matches this, so it never fires for the common
   -- current-vs-target case.
-  if require("diff.features.image_compare").maybe_compare(opts.source, opts.target) then
+  if
+    require("diff.features.image_compare").maybe_compare(opts.source, opts.target, {
+      source = is_literal(ctx, opts.source),
+      target = is_literal(ctx, opts.target),
+    })
+  then
     -- images.nvim owns whatever it opened; none of it is ours to report. No
     -- `view` either: this comparison ignores view= entirely, so naming one
     -- would describe a layout that was never applied (same for a directory
@@ -480,7 +497,7 @@ function M.execute(opts, ctx, on_done)
           render.stat(src_lines, tgt_lines, src_label, tgt_label, cfg.algorithm, cfg.ctxlen, {
             list = cfg.stat_list,
             mode = cfg.stat_list_mode,
-            target = stat_list_target(opts.target),
+            target = stat_list_target(opts.target, is_literal(ctx, opts.target)),
           })
         )
         return
@@ -786,6 +803,14 @@ function M.run(raw_args, range, run_opts)
       notify.error(bad)
       fail(bad)
       return
+    end
+    -- A path of the table is taken as it is: `~` and `$VAR` are not expanded there. Only the
+    -- values given here are marked, so a path typed into a picker later is expanded as ever.
+    ctx.literal = {}
+    for _, key in ipairs({ "source", "target", "base" }) do
+      if kv[key] then
+        ctx.literal[kv[key]] = true
+      end
     end
   else
     kv, unknown_kv =

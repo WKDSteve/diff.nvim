@@ -513,7 +513,10 @@ run({raw_args}, {opts})                                        *diff.run()*
     require("diff").run({ source = "old draft.md", target = "new draft.md" })
 <
   A value is a non-empty string, or a whole number for a buffer. Anything
-  else is an error that names the key; nothing runs.
+  else is an error that names the key; nothing runs. A path there is not
+  expanded either: `~` and `$VAR` stay part of the name, so a file whose name
+  holds a dollar sign is that file (expand a path yourself, e.g. with
+  `vim.fs.normalize()`, if you want it expanded).
 
                                                                 *diff-tree*
 In a tree view ~

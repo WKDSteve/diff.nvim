@@ -91,6 +91,7 @@
 ---@field source_bufnr integer         Buffer that was active at invocation
 ---@field origin_win   integer         Window that was active at invocation
 ---@field range        DiffNvim.Range|nil  Selected span when :Diff got a range
+---@field literal      table<string, true>|nil  The paths the table form of run() gave: taken as they are, `~`/`$VAR` not expanded (nil for the string form)
 ---@field anchor       string|nil  Overrides `source_bufnr`'s name as the path `git:<rev>` resolution anchors its repo-root lookup on -- for a caller (core/history.lua) that already resolved the right file/root independently of whichever buffer happened to be current, and would otherwise get `source_bufnr`'s (possibly unrelated, possibly unnamed) buffer instead
 
 ---@class DiffNvim.HistoryEntry

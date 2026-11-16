@@ -175,6 +175,66 @@ return function(H)
     ok(summary:find("second draft.md", 1, true) ~= nil, "... and the one only the target has")
   end
 
+  -- a path with a dollar sign is taken as it is in the table, even when it names a set variable;
+  -- the string form keeps expanding it
+  do
+    local lit = dir .. "lit/"
+    H.write_file(lit .. "$DIFF_TAB_DOLLAR.md", { "one", "literal", "three" })
+    H.write_file(lit .. "decoy.md", { "one", "decoy", "three" })
+    H.write_file(lit .. "plain.md", { "one", "two", "three" })
+    H.write_file(lit .. "$DIFF_TAB_DIR/same.md", { "literal dir" })
+    H.write_file(lit .. "decoydir/other.md", { "decoy dir" })
+    local saved_file, saved_dir = vim.env.DIFF_TAB_DOLLAR, vim.env.DIFF_TAB_DIR
+    vim.env.DIFF_TAB_DOLLAR = "decoy"
+    vim.env.DIFF_TAB_DIR = "decoydir"
+
+    ---@param args string|table
+    ---@return DiffNvim.Result|nil, string|nil
+    local function run(args)
+      reset()
+      local result, err
+      notices(function()
+        diff.run(args, {
+          on_done = function(r, e)
+            result, err = r, e
+          end,
+        })
+      end)
+      return result, err
+    end
+
+    local result, err =
+      run({ source = old_file, target = lit .. "$DIFF_TAB_DOLLAR.md", view = "vsplit" })
+    ok(result ~= nil, "a target with a dollar sign runs from a table: " .. tostring(err))
+    eq(
+      text_of(result.buffers[2]),
+      "one\nliteral\nthree",
+      "... and it is the file of that name, not the one the variable names"
+    )
+
+    result, err = run({ source = lit .. "$DIFF_TAB_DOLLAR.md", target = old_file, view = "vsplit" })
+    ok(result ~= nil, "the same as a source: " .. tostring(err))
+    eq(text_of(result.buffers[1]), "one\nliteral\nthree", "... the source is the file of that name")
+
+    result, err = run({ source = lit .. "$DIFF_TAB_DIR", target = dir .. "new notes" })
+    ok(result ~= nil, "a folder with a dollar sign goes to the directory diff: " .. tostring(err))
+    local summary = text_of(result.buffers[1])
+    ok(summary:find("same.md", 1, true) ~= nil, "... of that folder: " .. summary)
+    ok(summary:find("other.md", 1, true) == nil, "... not of the one the variable names")
+
+    result, err =
+      run("view=vsplit source=" .. lit .. "plain.md target=" .. lit .. "$DIFF_TAB_DOLLAR.md")
+    ok(result ~= nil, "the string form runs too: " .. tostring(err))
+    eq(
+      text_of(result.buffers[2]),
+      "one\ndecoy\nthree",
+      "... and keeps expanding the variable, as :Diff always did"
+    )
+
+    vim.env.DIFF_TAB_DOLLAR = saved_file
+    vim.env.DIFF_TAB_DIR = saved_dir
+  end
+
   -- an unknown key is reported, the run goes on (as with the string)
   do
     reset()

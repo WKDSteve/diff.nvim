@@ -204,11 +204,26 @@ function M.as_bufnr(spec)
   return math.floor(as_num)
 end
 
+---The path a file specifier names. `~`, `$VAR`/`${VAR}` and `%VAR%` are expanded (expand_path,
+---not fn.expand: SEC-34, a backtick span would run through &shell), unless `literal`: a value of
+---the table form of run() is a path as it is, so a file whose name holds a dollar sign that is
+---also a set variable is that file and not the one the variable names.
+---@param spec string
+---@param literal? boolean
+---@return string
+function M.spec_path(spec, literal)
+  if literal then
+    return spec
+  end
+  return expand_path(spec)
+end
+
 ---Resolve a specifier to its content lines.
 ---@param spec string|integer  "clipboard", a file path, or a buffer number
 ---@param label string         "target"|"source" — used only in error text
+---@param literal? boolean     a file path is taken as it is (@see spec_path)
 ---@return string[]|nil lines, string|nil err
-function M.resolve_lines(spec, label)
+function M.resolve_lines(spec, label, literal)
   -- clipboard ----------------------------------------------------------------
   if spec == "clipboard" then
     local raw = fn.getreg("+")
@@ -228,10 +243,7 @@ function M.resolve_lines(spec, label)
   end
 
   -- file path ----------------------------------------------------------------
-  -- expand_path, not fn.expand (SEC-34): `spec` may be the raw diff-target
-  -- argument the user typed -- fn.expand() would run a backtick span
-  -- through &shell.
-  local path = expand_path(tostring(spec))
+  local path = M.spec_path(tostring(spec), literal)
   if fn.filereadable(path) ~= 1 then
     return nil, string.format("%s: file not readable: %s", label, path)
   end

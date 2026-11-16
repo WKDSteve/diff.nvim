@@ -22,8 +22,6 @@
 --- `:Image gallery` itself uses): no picker UI, no new API needed in either
 --- dependency. `diff.image_compare = false` turns this off entirely.
 
-local expand_path = require("lib.nvim.cross.fs.expand_path")
-
 local M = {}
 
 local IMAGE_EXTS = { png = 1, jpg = 1, jpeg = 1, gif = 1, webp = 1, bmp = 1 }
@@ -39,9 +37,10 @@ end
 ---Whether `spec` is a plain, existing, raster-image file path — not
 ---"clipboard"/"current", not a bufnr, not a `git:`/`http(s)://` spec.
 ---@param spec DiffNvim.Source|DiffNvim.Target
+---@param literal? boolean  the path is taken as it is (@see diff.core.resolve.spec_path)
 ---@return boolean ok
 ---@return string|nil path  the expanded path, when `ok`
-function M.is_image_file_spec(spec)
+function M.is_image_file_spec(spec, literal)
   if type(spec) ~= "string" or spec == "" then
     return false, nil
   end
@@ -58,9 +57,7 @@ function M.is_image_file_spec(spec)
     return false, nil
   end
 
-  -- expand_path, not vim.fn.expand (SEC-34): `spec` is the raw diff-target
-  -- argument -- vim.fn.expand() would run a backtick span through &shell.
-  local path = expand_path(spec)
+  local path = require("diff.core.resolve").spec_path(spec, literal)
   if not has_image_ext(path) then
     return false, nil
   end
@@ -77,15 +74,17 @@ end
 ---completely unchanged.
 ---@param source DiffNvim.Source
 ---@param target DiffNvim.Target
+---@param literal? { source: boolean?, target: boolean? }  which side is a path as it is
 ---@return boolean handled
-function M.maybe_compare(source, target)
+function M.maybe_compare(source, target, literal)
   local cfg = (require("diff.config").get().diff or {})
   if cfg.image_compare == false then
     return false
   end
 
-  local is_a, path_a = M.is_image_file_spec(source)
-  local is_b, path_b = M.is_image_file_spec(target)
+  literal = literal or {}
+  local is_a, path_a = M.is_image_file_spec(source, literal.source)
+  local is_b, path_b = M.is_image_file_spec(target, literal.target)
   if not (is_a and is_b) then
     return false
   end

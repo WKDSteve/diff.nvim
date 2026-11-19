@@ -114,11 +114,15 @@ return {
     title = "The picker for an omitted side is pickers.nvim's fuzzy engine when it is installed",
     surface = { "config:use_pickers_nvim", "config:select_fn" },
     docs = "docs/FEATURES.md",
+    -- testing perf: choosing the picker engine starts no process; the sides it picks are measured by their own sheets.
+    perf = "skip:no process -- only selects the picker engine (pickers.nvim or vim.ui.select)",
   },
   {
     id = "diff.rename",
     title = "Every command can be renamed through commands.*",
     surface = { "config:commands" },
     docs = "docs/FEATURES.md",
+    -- testing perf: renaming registers the same commands under another name, the work behind them is the same.
+    perf = "skip:no process -- only renames the user commands at setup()",
   },
 }

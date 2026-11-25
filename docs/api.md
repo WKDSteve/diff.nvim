@@ -53,7 +53,7 @@ require("diff").run({ source = "old src", target = "new src" }, opts) -- two fol
 
 ## In a tree view
 
-`setup()` registers one action, `diff.compare`, at `lib.nvim.tree.registry`:
+`setup()` registers one action, `"diff.compare"`, at `lib.nvim.tree.registry`:
 "Compare". A tree that reads the registry (the own tree of
 [filetree.nvim](https://github.com/WKDSteve/filetree.nvim), `adapter =
 "native"`) offers it on every node that is a file or a folder on disk, in its

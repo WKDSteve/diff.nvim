@@ -360,7 +360,7 @@ offers "Compare" on its nodes: two marked files against each other (in
 `diff.default_view`), two marked folders (the directory diff), or the file
 under the cursor against the file of the editor window, whose live buffer
 stays the left-hand side. Anything else says what is missing. diff.nvim only
-announces the action (`diff.compare`) at lib.nvim's registry; without a tree
+announces the action (`"diff.compare"`) at lib.nvim's registry; without a tree
 that reads it nothing changes. Details: [Lua API](api.md#in-a-tree-view).
 
 - **Module:** `lua/diff/integrations/tree.lua`
